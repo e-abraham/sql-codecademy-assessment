@@ -1,0 +1,63 @@
+-- View both tables
+SELECT * FROM users LIMIT 200;
+SELECT * FROM progress LIMIT 200;
+
+-- Top 25 Schools
+SELECT email_domain,
+  COUNT(*) 
+FROM users
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 25;
+
+-- Number of New York learners
+SELECT city,
+  COUNT(*)
+FROM users
+WHERE email_domain LIKE '%.edu'
+  AND city = 'New York';
+
+-- Number of mobile users
+SELECT mobile_app,
+  COUNT(*)
+FROM users
+WHERE mobile_app = 'mobile-user';
+
+-- Sign up counts for each hour
+SELECT strftime('%H', sign_up_at) AS 'Hour',
+  COUNT(*)
+FROM users
+GROUP BY 1
+ORDER BY 1 ASC;
+
+-- Join both tables
+SELECT *
+FROM users
+LEFT JOIN progress
+  ON users.user_id = progress.user_id
+ORDER BY users.email_domain ASC
+LIMIT 20;
+
+-- ??? comparing course preferecne by school
+SELECT users.email_domain,
+  CASE
+    WHEN progress.learn_cpp != '' THEN COUNT(progress.learn_cpp)
+  END AS 'cpp count',
+  CASE
+    WHEN progress.learn_sql != '' THEN COUNT(progress.learn_sql)
+  END AS 'sql count',
+  CASE
+    WHEN progress.learn_html != '' THEN COUNT(progress.learn_html)
+  END AS 'html count',
+  CASE
+    WHEN progress.learn_javascript != '' THEN COUNT(progress.learn_javascript)
+  END AS 'javascript count',
+  CASE
+    WHEN progress.learn_java != '' THEN COUNT(progress.learn_java)
+  END AS 'java count'
+FROM users
+LEFT JOIN progress
+  ON users.user_id = progress.user_id
+GROUP BY 1
+ORDER BY 1 ASC
+LIMIT 200;
